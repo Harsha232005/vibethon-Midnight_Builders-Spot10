@@ -3,105 +3,382 @@ export const modules = [
     id: 'decision-trees',
     title: 'Decision Trees',
     level: 'Beginner',
-    description:
-      'Learn how decision trees split data using feature-based rules to make predictions. Understand information gain, Gini impurity, and tree pruning.',
+    description: 'Learn how decision trees split data using feature-based rules to make predictions. Understand information gain, Gini impurity, and tree pruning.',
+    layman: 'Imagine you are playing "20 Questions". You ask a question (like "Is it an animal?"), and the answer helps you narrow down what the thing is. A Decision Tree does exactly that with data!',
     sections: [
       {
         heading: 'What Is a Decision Tree?',
-        body: 'A decision tree is a supervised learning algorithm used for both classification and regression tasks. It works by recursively splitting the dataset into subsets based on the value of input features. Each internal node represents a test on a feature (e.g., "Is age > 30?"), each branch represents the outcome of that test, and each leaf node holds a class label or a continuous value. The tree is built top-down by choosing the feature that best separates the data at each step, measured by criteria such as Information Gain or Gini Impurity. Decision trees are popular because they are easy to interpret, visualise, and require little data preprocessing.',
+        body: 'A decision tree is a supervised learning algorithm used for both classification and regression tasks. It works by recursively splitting the dataset into subsets based on the value of input features.',
       },
       {
-        heading: 'Splitting Criteria: Gini Impurity & Information Gain',
-        body: 'To decide which feature to split on at each node the algorithm evaluates candidate splits using a purity metric. Gini Impurity measures how often a randomly chosen element would be misclassified if it were labelled according to the distribution of labels in that subset — a Gini value of 0 means the node is pure. Information Gain, rooted in information theory, calculates the reduction in entropy (disorder) after splitting. The algorithm picks the feature and threshold that maximise Information Gain (or minimise Gini). In practice both criteria produce similar trees, but Gini is slightly faster to compute. Understanding these metrics is key to diagnosing why a tree chose a particular split.',
+        heading: 'Splitting Criteria',
+        body: 'Algorithms use metrics like Gini Impurity or Information Gain (Entropy) to decide which feature splits the data best at each node.',
       },
       {
-        heading: 'Overfitting & Pruning',
-        body: 'A fully grown decision tree can memorise the training data, leading to overfitting — high accuracy on training samples but poor generalisation to unseen data. Pruning techniques address this. Pre-pruning (early stopping) limits tree growth by setting a maximum depth, minimum samples per leaf, or minimum information gain threshold. Post-pruning grows the full tree first and then removes branches that provide little predictive power, often evaluated via a validation set or cost-complexity pruning (also called minimal cost-complexity pruning). Additional strategies include setting a maximum number of leaf nodes and using ensemble methods like Random Forests, which combine many shallow trees to reduce variance while retaining predictive strength.',
+        heading: 'Overfitting',
+        body: 'Trees can become too complex. Pruning is used to simplify the tree and help it generalise to new data.',
       },
     ],
+    code: {
+      javascript: `// Decision Tree classification in JS (Concept)
+function predict(node, sample) {
+  if (node.isLeaf) return node.label;
+  if (sample[node.feature] <= node.threshold) {
+    return predict(node.left, sample);
+  } else {
+    return predict(node.right, sample);
+  }
+}`,
+      java: `// Decision Tree Predict in Java
+public class DecisionTree {
+    public String predict(Node node, Map<String, Double> sample) {
+        if (node.isLeaf) return node.label;
+        if (sample.get(node.feature) <= node.threshold) {
+            return predict(node.left, sample);
+        } else {
+            return predict(node.right, sample);
+        }
+    }
+}`,
+      cpp: `// Decision Tree Predict in C++
+string predict(Node* node, map<string, double>& sample) {
+    if (node->isLeaf) return node->label;
+    if (sample[node->feature] <= node->threshold) {
+        return predict(node->left, sample);
+    } else {
+        return predict(node->right, sample);
+    }
+}`,
+    },
   },
   {
     id: 'neural-networks',
     title: 'Neural Networks',
     level: 'Beginner',
-    description:
-      'Explore the building blocks of deep learning — neurons, layers, activation functions, and back-propagation.',
+    description: 'Explore the building blocks of deep learning — neurons, layers, activation functions, and back-propagation.',
+    layman: 'Think of a stadium crowd doing "The Wave". One person stands up, then their neighbor, then the next. A Neural Network is like millions of tiny connections passing signals to reach a final decision.',
     sections: [
       {
         heading: 'Neurons and Layers',
-        body: 'An artificial neural network is inspired by biological neurons. Each artificial neuron receives one or more inputs, multiplies each by a learnable weight, sums the weighted inputs plus a bias term, and passes the result through an activation function to produce an output. Neurons are organised into layers: the input layer receives raw features, one or more hidden layers perform intermediate computations, and the output layer produces the final prediction. A network with many hidden layers is called a deep neural network — the foundation of modern deep learning. The width (number of neurons per layer) and depth (number of layers) determine the model\'s capacity to learn complex patterns.',
+        body: 'An artificial neural network is inspired by biological neurons. It has input, hidden, and output layers.',
       },
       {
         heading: 'Activation Functions',
-        body: 'Activation functions introduce non-linearity, enabling neural networks to model complex, non-linear relationships in data. The Sigmoid function squashes outputs to the range (0, 1) and is useful for binary classification but suffers from vanishing gradients in deep networks. ReLU (Rectified Linear Unit) outputs zero for negative inputs and the input itself for positive values — it is computationally efficient and mitigates the vanishing gradient problem, making it the default choice for hidden layers. Variants like Leaky ReLU and ELU address the "dying ReLU" issue where neurons stop learning. Softmax generalises sigmoid to multiple classes and is typically used in the output layer for multi-class classification, producing a probability distribution over classes.',
+        body: 'Activation functions like ReLU or Sigmoid introduce non-linearity, allowing the network to learn complex patterns.',
       },
       {
-        heading: 'Back-propagation and Training',
-        body: 'Back-propagation is the algorithm that trains neural networks by computing the gradient of the loss function with respect to each weight. During the forward pass, inputs flow through the network to produce predictions. A loss function (e.g., cross-entropy for classification, mean squared error for regression) measures the prediction error. During the backward pass, the chain rule of calculus is applied layer by layer — from output to input — to compute how much each weight contributed to the error. An optimiser such as Stochastic Gradient Descent (SGD) or Adam then updates the weights in the direction that reduces the loss. Training proceeds over multiple epochs, and techniques like learning-rate scheduling, dropout, and batch normalisation help the network converge faster and generalise better.',
+        heading: 'Back-propagation',
+        body: 'The standard algorithm for training networks by calculating the error at the output and propagating it back to adjust weights.',
       },
     ],
+    code: {
+      javascript: `// Simple Neuron calculation
+const activate = x => 1 / (1 + Math.exp(-x));
+const output = activate(inputs.reduce((acc, val, i) => acc + val * weights[i], bias));`,
+      java: `// Neuron Activation in Java
+public double sigmoid(double x) {
+    return 1 / (1 + Math.exp(-x));
+}
+double output = sigmoid(dotProduct(inputs, weights) + bias);`,
+      cpp: `// Neuron Activation in C++
+double sigmoid(double x) {
+    return 1.0 / (1.0 + exp(-x));
+}
+double output = sigmoid(inner_product(inputs.begin(), inputs.end(), weights.begin(), 0.0) + bias);`,
+    },
   },
   {
     id: 'classification',
     title: 'Classification',
     level: 'Intermediate',
-    description:
-      'Understand supervised classification algorithms including logistic regression, SVMs, and evaluation metrics like precision, recall, and F1-score.',
+    description: 'Understand supervised classification algorithms like Logistic Regression and SVMs.',
+    layman: 'Classification is like sorting laundry. You look at a garment and decide if it belongs in the "Socks" pile or the "Shirts" pile based on its features.',
     sections: [
       {
         heading: 'What Is Classification?',
-        body: 'Classification is a supervised learning task where the model learns to assign input samples to one of a set of predefined categories (classes). Given a labelled training set, the algorithm builds a decision boundary in feature space that separates the classes. During inference, new samples are mapped to the class on the appropriate side of the boundary. Binary classification distinguishes between two classes (e.g., spam vs. not spam), while multi-class classification handles three or more (e.g., digit recognition 0–9). Common algorithms include Logistic Regression, k-Nearest Neighbours (k-NN), Support Vector Machines (SVM), Decision Trees, and Neural Networks. Choosing the right algorithm depends on factors like dataset size, feature dimensionality, linearity, and interpretability requirements.',
+        body: 'Classification is a supervised learning task where the model learns to assign input samples to one of a set of predefined categories.',
       },
       {
-        heading: 'Logistic Regression & Support Vector Machines',
-        body: 'Logistic Regression models the probability that an input belongs to a particular class using the logistic (sigmoid) function. Despite its name, it is a classification algorithm. It finds a linear decision boundary that maximises the likelihood of the observed labels and outputs calibrated probabilities, which is valuable when you need confidence scores. Support Vector Machines (SVM) take a different geometric approach: they find the hyperplane that maximises the margin — the distance between the nearest points of each class (support vectors) and the boundary. This margin-maximisation principle gives SVMs strong generalisation. For non-linearly separable data, the kernel trick (e.g., RBF, polynomial kernels) implicitly maps features into a higher-dimensional space where a linear separator exists.',
+        heading: 'Decision Boundaries',
+        body: 'Algorithms find a boundary in feature space that separates different classes.',
       },
       {
-        heading: 'Evaluation Metrics',
-        body: 'Accuracy alone can be misleading, especially with imbalanced datasets. Precision measures the fraction of positive predictions that are actually positive — important when false positives are costly (e.g., spam filtering). Recall (sensitivity) measures the fraction of actual positives that are correctly identified — critical when false negatives are costly (e.g., disease detection). The F1-Score is the harmonic mean of precision and recall, providing a single balanced metric. The confusion matrix gives a full picture: true positives, true negatives, false positives, and false negatives. ROC curves plot the true positive rate against the false positive rate at various thresholds, and the Area Under the Curve (AUC) summarises overall discriminative ability across all thresholds.',
+        heading: 'Metrics',
+        body: 'Precision, Recall, and F1-score are crucial for evaluating how well the classifier is performing.',
       },
     ],
+    code: {
+      javascript: `// Logistic Regression prediction
+const predict = (x, weights) => {
+  const score = weights.reduce((acc, w, i) => acc + w * x[i], 0);
+  return 1 / (1 + Math.exp(-score)) > 0.5 ? 1 : 0;
+}`,
+      java: `// Logistic Regression in Java
+public int predict(double[] x, double[] weights) {
+    double score = 0;
+    for (int i = 0; i < x.length; i++) score += weights[i] * x[i];
+    return (1 / (1 + Math.exp(-score))) > 0.5 ? 1 : 0;
+}`,
+      cpp: `// Logistic Regression in C++
+int predict(const vector<double>& x, const vector<double>& weights) {
+    double score = inner_product(x.begin(), x.end(), weights.begin(), 0.0);
+    return (1.0 / (1.0 + exp(-score))) > 0.5 ? 1 : 0;
+}`,
+    },
   },
   {
     id: 'clustering',
     title: 'Clustering & K-Means',
     level: 'Intermediate',
-    description:
-      'Discover unsupervised clustering techniques — K-Means, hierarchical clustering, and how to choose the optimal number of clusters.',
+    description: 'Discover unsupervised clustering techniques — K-Means and how to group unlabelled data.',
+    layman: 'If you dropped a bunch of different colored Legos on the floor, clustering is the act of grouping all the red ones here, the blue ones there, and the yellow ones over there.',
     sections: [
       {
-        heading: 'Unsupervised Learning & Clustering',
-        body: 'Unlike supervised learning, unsupervised learning works with unlabelled data — the algorithm must discover hidden structure on its own. Clustering is the most common unsupervised task: grouping data points so that items within a cluster are more similar to each other than to items in other clusters. Similarity is typically measured using distance metrics such as Euclidean distance, Manhattan distance, or cosine similarity. Use cases include customer segmentation, anomaly detection, document grouping, and image compression. Clustering results can also serve as features for downstream supervised models, a technique known as semi-supervised learning or feature engineering via clustering.',
+        heading: 'Unsupervised Learning',
+        body: 'Clustering works with unlabelled data, finding hidden structures on its own.',
       },
       {
-        heading: 'The K-Means Algorithm',
-        body: 'K-Means is the most widely used clustering algorithm due to its simplicity and scalability. It works as follows: (1) Choose K, the number of clusters. (2) Randomly initialise K centroids. (3) Assign each data point to the nearest centroid. (4) Recompute each centroid as the mean of all points assigned to it. (5) Repeat steps 3–4 until assignments stop changing or a maximum number of iterations is reached. The algorithm minimises the within-cluster sum of squares (inertia). K-Means++ is an improved initialisation strategy that spreads initial centroids apart, reducing the chance of poor convergence. Limitations include the need to specify K in advance, sensitivity to outliers, and the assumption that clusters are spherical and equally sized.',
+        heading: 'K-Means Algorithm',
+        body: 'Iteratively moves centroids to the center of data point groups until they stabilize.',
       },
       {
-        heading: 'Choosing K & Alternative Methods',
-        body: 'Selecting the right number of clusters is crucial. The Elbow Method plots inertia (within-cluster sum of squares) against K; the "elbow" — where the rate of decrease sharply changes — suggests the optimal K. The Silhouette Score measures how similar each point is to its own cluster versus the nearest neighbouring cluster, with values closer to +1 indicating well-separated clusters. Beyond K-Means, hierarchical clustering (agglomerative or divisive) builds a dendrogram that can be cut at any level to produce clusters without specifying K upfront. DBSCAN (Density-Based Spatial Clustering of Applications with Noise) identifies clusters of arbitrary shape by grouping densely connected points and labelling sparse points as noise — especially useful when clusters are non-spherical or data contains outliers.',
+        heading: 'Choosing K',
+        body: 'Methods like the "Elbow Method" help determine the optimal number of groups.',
       },
     ],
+    code: {
+      javascript: `// K-Means: Assigning points to centroids
+const getClosestCentroid = (point, centroids) => {
+  let min = Infinity, closest = 0;
+  centroids.forEach((c, i) => {
+    const dist = distance(point, c);
+    if (dist < min) { min = dist; closest = i; }
+  });
+  return closest;
+}`,
+      java: `// K-Means centroid assignment in Java
+int getClosestCentroid(double[] point, double[][] centroids) {
+    double min = Double.MAX_VALUE; int closest = 0;
+    for (int i = 0; i < centroids.length; i++) {
+        double d = distance(point, centroids[i]);
+        if (d < min) { min = d; closest = i; }
+    }
+    return closest;
+}`,
+      cpp: `// K-Means in C++
+int getClosestCentroid(const vector<double>& point, const vector<vector<double>>& centroids) {
+    double min = numeric_limits<double>::max(); int closest = 0;
+    for (int i = 0; i < centroids.size(); i++) {
+        double d = euclidean_distance(point, centroids[i]);
+        if (d < min) { min = d; closest = i; }
+    }
+    return closest;
+}`,
+    },
   },
   {
     id: 'regression',
     title: 'Linear Regression',
     level: 'Advanced',
-    description:
-      'Master the mathematics behind linear regression — least squares, gradient descent, regularisation, and model evaluation.',
+    description: 'Master the mathematics behind linear regression — least squares and gradient descent.',
+    layman: 'Regression is like predicting how tall a kid will be based on their current height. We find the "best fit" line that connects the dots.',
     sections: [
       {
-        heading: 'Simple & Multiple Linear Regression',
-        body: 'Linear regression models the relationship between a dependent variable (target) and one or more independent variables (features) by fitting a straight line (or hyperplane in higher dimensions). In simple linear regression the model is y = β₀ + β₁x + ε, where β₀ is the intercept, β₁ is the slope, and ε is the error term. The Ordinary Least Squares (OLS) method finds the coefficients that minimise the sum of squared residuals — the differences between observed and predicted values. In multiple linear regression the model extends to y = β₀ + β₁x₁ + β₂x₂ + … + βₙxₙ + ε. Assumptions include linearity, independence of errors, homoscedasticity (constant variance of errors), and normally distributed residuals. Violations of these assumptions may require transformations or alternative models.',
+        heading: 'Simple Linear Regression',
+        body: 'Modelling the relationship between a dependent and independent variable using a straight line.',
       },
       {
-        heading: 'Gradient Descent Optimisation',
-        body: 'When datasets are very large or the closed-form OLS solution is computationally expensive, gradient descent provides an iterative alternative. The algorithm starts with random coefficient values and repeatedly updates them in the direction that reduces the cost function (typically Mean Squared Error). The update rule is β := β − α · ∂J/∂β, where α is the learning rate and J is the cost function. A learning rate that is too high causes overshooting and divergence; too low leads to slow convergence. Variants include Batch Gradient Descent (uses the entire dataset per step), Stochastic Gradient Descent (uses one sample per step for faster but noisier updates), and Mini-batch Gradient Descent (uses small batches for a balance of speed and stability). Monitoring the loss curve helps diagnose convergence issues.',
+        heading: 'Loss Functions',
+        body: 'Mean Squared Error (MSE) measures the difference between actual and predicted values.',
       },
       {
-        heading: 'Regularisation & Model Evaluation',
-        body: 'Regularisation adds a penalty term to the cost function to prevent overfitting, especially when there are many features relative to the number of samples. L2 regularisation (Ridge Regression) adds λΣβ² to the cost, shrinking coefficients toward zero but never exactly to zero. L1 regularisation (Lasso Regression) adds λΣ|β|, which can drive some coefficients to exactly zero, effectively performing feature selection. Elastic Net combines both penalties. The regularisation strength λ is a hyper-parameter chosen via cross-validation. Model evaluation metrics for regression include R² (coefficient of determination, the proportion of variance explained), Mean Absolute Error (MAE), Mean Squared Error (MSE), and Root Mean Squared Error (RMSE). Residual plots help verify assumptions and detect patterns the model has missed.',
+        heading: 'Gradient Descent',
+        body: 'An optimization algorithm used to minimize the loss function by iteratively moving toward the bottom of the "valley".',
       },
     ],
+    code: {
+      javascript: `// MSE Calculation
+const mse = (yTrue, yPred) => 
+  yTrue.reduce((acc, val, i) => acc + Math.pow(val - yPred[i], 2), 0) / yTrue.length;`,
+      java: `// MSE in Java
+public double mse(double[] yTrue, double[] yPred) {
+    double sum = 0;
+    for (int i = 0; i < yTrue.length; i++) sum += Math.pow(yTrue[i] - yPred[i], 2);
+    return sum / yTrue.length;
+}`,
+      cpp: `// MSE in C++
+double mse(const vector<double>& yTrue, const vector<double>& yPred) {
+    double sum = 0;
+    for (size_t i = 0; i < yTrue.size(); ++i) sum += pow(yTrue[i] - yPred[i], 2);
+    return sum / yTrue.size();
+}`,
+    },
+  },
+  {
+    id: 'svm',
+    title: 'Support Vector Machines',
+    level: 'Intermediate',
+    description: 'Find the maximum margin hyperplane that separates classes with high accuracy.',
+    layman: 'Imagine you want to build a white fence between a crowd of red fans and blue fans. SVM finds the path for the fence that stays as far as possible from both groups.',
+    sections: [
+      {
+        heading: 'Hyperplanes',
+        body: 'In SVM, we look for a boundary (hyperplane) that separates classes with the widest gap.',
+      },
+      {
+        heading: 'Support Vectors',
+        body: 'These are the data points closest to the hyperplane — they are the most important for defining the boundary.',
+      },
+      {
+        heading: 'Kernel Trick',
+        body: 'Allows SVM to create non-linear boundaries by transforming data into higher dimensions.',
+      },
+    ],
+    code: {
+      javascript: `// Simple SVM-like hinge loss calculation
+const hingeLoss = (y, score) => Math.max(0, 1 - y * score);`,
+      java: `// Hinge Loss in Java
+public double hingeLoss(int y, double score) {
+    return Math.max(0, 1 - y * score);
+}`,
+      cpp: `// Hinge Loss in C++
+double hingeLoss(int y, double score) {
+    return max(0.0, 1.0 - y * score);
+}`,
+    },
+  },
+  {
+    id: 'random-forest',
+    title: 'Random Forest',
+    level: 'Intermediate',
+    description: 'Harness the power of ensembles by combining multiple decision trees.',
+    layman: 'Instead of asking one expert for advice, you ask a thousand. Some might be wrong, but on average, the group will reach the best decision. That is a Random Forest!',
+    sections: [
+      {
+        heading: 'Ensemble Learning',
+        body: 'Random Forest combines many weak learners (Decision Trees) into one robust model.',
+      },
+      {
+        heading: 'Bagging',
+        body: 'Short for "Bootstrap Aggregating", it involves training each tree on a random subset of data.',
+      },
+      {
+        heading: 'Feature Randomness',
+        body: 'Each tree only sees a random subset of features, ensuring they stay diverse.',
+      },
+    ],
+    code: {
+      javascript: `// Forest prediction via majority vote
+const forestPredict = (forest, sample) => {
+  const votes = forest.map(tree => tree.predict(sample));
+  return getMajority(votes);
+}`,
+      java: `// Random Forest Vote in Java
+public String vote(List<Tree> forest, Map<String, Double> sample) {
+    List<String> votes = forest.stream().map(t -> t.predict(sample)).collect(toList());
+    return majorityOf(votes);
+}`,
+      cpp: `// Random Forest Vote in C++
+string vote(const vector<Tree>& forest, const map<string, double>& sample) {
+    vector<string> votes;
+    for(auto& t : forest) votes.push_back(t.predict(sample));
+    return majorityOf(votes);
+}`,
+    },
+  },
+  {
+    id: 'gradient-descent',
+    title: 'Gradient Descent',
+    level: 'Advanced',
+    description: 'The engine of AI: optimize parameters by following the steepest descent.',
+    layman: 'You are blindfolded on a foggy mountain and want to find the bottom. You feel with your feet which way is down and take a small step. Repeat until you are at the bottom!',
+    sections: [
+      {
+        heading: 'Optimization',
+        body: 'Gradient Descent is an algorithm used to minimize a function (the loss) by iteratively moving in the direction of steepest descent.',
+      },
+      {
+        heading: 'Learning Rate',
+        body: 'Determines the size of the steps. Too large, and you miss the bottom. Too small, and it takes forever.',
+      },
+      {
+        heading: 'Local vs Global Minima',
+        body: 'The challenge of getting stuck in a small "dip" instead of the truly lowest point.',
+      },
+    ],
+    code: {
+      javascript: `// Param update in Gradient Descent
+const update = (w, gradient, lr) => w - lr * gradient;`,
+      java: `// Weight update in Java
+public double update(double w, double gradient, double lr) {
+    return w - lr * gradient;
+}`,
+      cpp: `// Weight update in C++
+double update(double w, double gradient, double lr) {
+    return w - lr * gradient;
+}`,
+    },
+  },
+  {
+    id: 'pca',
+    title: 'PCA (Dimensionality Reduction)',
+    level: 'Advanced',
+    description: 'Compress complex data into its most important components.',
+    layman: 'Imagine taking a photo of a 3D statue. You lose one dimension, but you can still recognize the statue. PCA finds the best angle to take that photo to keep the most detail.',
+    sections: [
+      {
+        heading: 'Variance Maximization',
+        body: 'PCA finds the directions (principal components) where the data varies the most.',
+      },
+      {
+        heading: 'Dimensionality Reduction',
+        body: 'By ignoring less important components, we can simplify data and speed up other algorithms.',
+      },
+      {
+        heading: 'Eigenvectors and Eigenvalues',
+        body: 'The linear algebra tools used to find the principal components.',
+      },
+    ],
+    code: {
+      javascript: `// Concept of projectiing data onto a component
+const project = (data, component) => dotProduct(data, component);`,
+      java: `// PCA Projection in Java
+public double project(double[] data, double[] component) {
+    return dotProduct(data, component);
+}`,
+      cpp: `// PCA Projection in C++
+double project(const vector<double>& data, const vector<double>& component) {
+    return inner_product(data.begin(), data.end(), component.begin(), 0.0);
+}`,
+    },
+  },
+  {
+    id: 'reinforcement-learning',
+    title: 'Reinforcement Learning',
+    level: 'Advanced',
+    description: 'Train agents to make decisions by rewarding good actions and penalizing bad ones.',
+    layman: 'Think of training a puppy. You give a treat for a good trick and say "No" for a bad one. Eventually, the puppy learns to do the tricks to get the most treats!',
+    sections: [
+      {
+        heading: 'Agents and Environments',
+        body: 'An agent interacts with an environment, taking actions and observing outcomes.',
+      },
+      {
+        heading: 'Rewards and Penalties',
+        body: 'The feedback loop that guides the agent toward its goal.',
+      },
+      {
+        heading: 'Policy and Q-Learning',
+        body: 'The strategy an agent uses to decide which action to take next to maximize total reward.',
+      },
+    ],
+    code: {
+      javascript: `// Q-Learning update rule
+qTable[state][action] = qTable[state][action] + alpha * (reward + gamma * Math.max(...qTable[nextState]) - qTable[state][action]);`,
+      java: `// Q-Learning Update in Java
+qTable[s][a] += alpha * (r + gamma * max(qTable[nextS]) - qTable[s][a]);`,
+      cpp: `// Q-Learning Update in C++
+qTable[s][a] += alpha * (r + gamma * (*max_element(qTable[nextS].begin(), qTable[nextS].end())) - qTable[s][a]);`,
+    },
   },
 ];

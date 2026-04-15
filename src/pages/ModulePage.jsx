@@ -1,191 +1,235 @@
+import { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Brain, Code, Eye, HelpCircle, ChevronRight, Zap, Target, BookOpen, Layers, Sparkles, Terminal, Trophy } from 'lucide-react';
 import { modules } from '../data/modules';
 import { getUser, updateUser } from '../utils/auth';
 import Navbar from '../components/Navbar';
-
-const levelColor = {
-  Beginner: 'bg-green-100 text-green-700',
-  Intermediate: 'bg-yellow-100 text-yellow-700',
-  Advanced: 'bg-red-100 text-red-700',
-};
-
-function DecisionTreeDiagram() {
-  return (
-    <div className="flex justify-center my-6">
-      <svg viewBox="0 0 500 350" className="w-full max-w-lg" xmlns="http://www.w3.org/2000/svg">
-        {/* Lines */}
-        <line x1="250" y1="55" x2="130" y2="145" stroke="#a5b4fc" strokeWidth="2" />
-        <line x1="250" y1="55" x2="370" y2="145" stroke="#a5b4fc" strokeWidth="2" />
-        <line x1="130" y1="175" x2="70" y2="265" stroke="#a5b4fc" strokeWidth="2" />
-        <line x1="130" y1="175" x2="190" y2="265" stroke="#a5b4fc" strokeWidth="2" />
-        <line x1="370" y1="175" x2="310" y2="265" stroke="#a5b4fc" strokeWidth="2" />
-        <line x1="370" y1="175" x2="430" y2="265" stroke="#a5b4fc" strokeWidth="2" />
-
-        {/* Branch labels */}
-        <text x="175" y="95" className="text-xs" fill="#6366f1" fontWeight="bold">Yes</text>
-        <text x="310" y="95" className="text-xs" fill="#ef4444" fontWeight="bold">No</text>
-        <text x="82" y="215" className="text-xs" fill="#6366f1" fontWeight="bold">Yes</text>
-        <text x="165" y="215" className="text-xs" fill="#ef4444" fontWeight="bold">No</text>
-        <text x="322" y="215" className="text-xs" fill="#6366f1" fontWeight="bold">Yes</text>
-        <text x="405" y="215" className="text-xs" fill="#ef4444" fontWeight="bold">No</text>
-
-        {/* Root node */}
-        <rect x="200" y="20" width="100" height="40" rx="8" fill="#6366f1" />
-        <text x="250" y="45" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">Age &gt; 30?</text>
-
-        {/* Level 2 nodes */}
-        <rect x="80" y="140" width="100" height="40" rx="8" fill="#818cf8" />
-        <text x="130" y="165" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">Income &gt; 50k?</text>
-
-        <rect x="320" y="140" width="100" height="40" rx="8" fill="#818cf8" />
-        <text x="370" y="165" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">Student?</text>
-
-        {/* Leaf nodes */}
-        <rect x="30" y="260" width="80" height="35" rx="8" fill="#22c55e" />
-        <text x="70" y="282" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">Buy ✓</text>
-
-        <rect x="150" y="260" width="80" height="35" rx="8" fill="#ef4444" />
-        <text x="190" y="282" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">Don't Buy ✗</text>
-
-        <rect x="270" y="260" width="80" height="35" rx="8" fill="#22c55e" />
-        <text x="310" y="282" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">Buy ✓</text>
-
-        <rect x="390" y="260" width="80" height="35" rx="8" fill="#ef4444" />
-        <text x="430" y="282" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">Don't Buy ✗</text>
-
-        <text x="250" y="330" textAnchor="middle" fill="#64748b" fontSize="12">Example: Purchase Decision Tree</text>
-      </svg>
-    </div>
-  );
-}
-
-function NeuralNetworkDiagram() {
-  const inputY = [80, 140, 200, 260];
-  const hiddenY = [60, 120, 180, 240, 300];
-  const outputY = [130, 210];
-  const inputX = 80, hiddenX = 250, outputX = 420;
-
-  return (
-    <div className="flex justify-center my-6">
-      <svg viewBox="0 0 500 360" className="w-full max-w-lg" xmlns="http://www.w3.org/2000/svg">
-        {/* Input → Hidden lines */}
-        {inputY.map((iy, i) =>
-          hiddenY.map((hy, j) => (
-            <line key={`ih-${i}-${j}`} x1={inputX} y1={iy} x2={hiddenX} y2={hy} stroke="#c7d2fe" strokeWidth="1" opacity="0.6" />
-          ))
-        )}
-        {/* Hidden → Output lines */}
-        {hiddenY.map((hy, i) =>
-          outputY.map((oy, j) => (
-            <line key={`ho-${i}-${j}`} x1={hiddenX} y1={hy} x2={outputX} y2={oy} stroke="#c7d2fe" strokeWidth="1" opacity="0.6" />
-          ))
-        )}
-
-        {/* Input layer */}
-        {inputY.map((y, i) => (
-          <g key={`input-${i}`}>
-            <circle cx={inputX} cy={y} r="18" fill="#6366f1" />
-            <text x={inputX} y={y + 5} textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">x{i + 1}</text>
-          </g>
-        ))}
-
-        {/* Hidden layer */}
-        {hiddenY.map((y, i) => (
-          <g key={`hidden-${i}`}>
-            <circle cx={hiddenX} cy={y} r="18" fill="#8b5cf6" />
-            <text x={hiddenX} y={y + 5} textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">h{i + 1}</text>
-          </g>
-        ))}
-
-        {/* Output layer */}
-        {outputY.map((y, i) => (
-          <g key={`output-${i}`}>
-            <circle cx={outputX} cy={y} r="18" fill="#a855f7" />
-            <text x={outputX} y={y + 5} textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">y{i + 1}</text>
-          </g>
-        ))}
-
-        {/* Labels */}
-        <text x={inputX} y={310} textAnchor="middle" fill="#64748b" fontSize="11" fontWeight="bold">Input</text>
-        <text x={hiddenX} y={345} textAnchor="middle" fill="#64748b" fontSize="11" fontWeight="bold">Hidden</text>
-        <text x={outputX} y={275} textAnchor="middle" fill="#64748b" fontSize="11" fontWeight="bold">Output</text>
-      </svg>
-    </div>
-  );
-}
+import AlgorithmVisualizer from '../visualizations/AlgorithmVisualizer';
+import CodeEditor from '../components/CodeEditor';
+import AITutor from '../components/AITutor';
+import WhatIfSimulator from '../components/WhatIfSimulator';
 
 export default function ModulePage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const mod = modules.find((m) => m.id === id);
+  const [activeTab, setActiveTab] = useState('explanation'); // explanation, visualization, practice
+  const [isELI5, setIsELI5] = useState(false);
+  
+  const mod = useMemo(() => modules.find(m => m.id === id), [id]);
+  const user = getUser();
 
   if (!mod) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-white dark:bg-slate-950 flex flex-col items-center justify-center">
         <Navbar />
-        <div className="max-w-3xl mx-auto px-4 py-16 text-center">
-          <h1 className="text-2xl font-bold text-gray-800">Module not found</h1>
-        </div>
+        <h1 className="text-2xl font-black text-slate-800 dark:text-slate-100">Module Not Found</h1>
       </div>
     );
   }
 
-  const handleTakeQuiz = () => {
-    const user = getUser();
-    if (user) {
-      const completed = user.completedModules || [];
-      if (!completed.includes(id)) {
-        const updated = [...completed, id];
-        const streak = (user.streak || 0) + 1;
-        const badges = [...(user.badges || [])];
-        if (updated.length >= 1 && !badges.includes('first-step')) badges.push('first-step');
-        if (streak >= 3 && !badges.includes('on-fire')) badges.push('on-fire');
-        updateUser({ completedModules: updated, streak, badges });
-      }
+  const handleComplete = () => {
+    if (!user.completedModules?.includes(id)) {
+      const updated = [...(user.completedModules || []), id];
+      updateUser({ completedModules: updated, score: (user.score || 0) + 10 });
     }
     navigate(`/quiz/${id}`);
   };
 
+  const levelColor = {
+    Beginner: 'bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400',
+    Intermediate: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-500/10 dark:text-yellow-400',
+    Advanced: 'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400',
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
       <Navbar />
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${levelColor[mod.level]}`}>
-            {mod.level}
-          </span>
-          <h1 className="text-3xl font-bold text-gray-800 mt-3">{mod.title}</h1>
-          <p className="text-gray-500 mt-2">{mod.description}</p>
-        </div>
+      <AITutor moduleName={mod.title} />
 
-        {/* SVG Diagram */}
-        {id === 'decision-trees' && <DecisionTreeDiagram />}
-        {id === 'neural-networks' && <NeuralNetworkDiagram />}
-
-        {/* Content sections */}
-        <div className="space-y-6 mb-8">
-          {mod.sections.map((sec, idx) => (
-            <div key={idx} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h2 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                <span className="w-7 h-7 rounded-full bg-indigo-100 text-indigo-600 text-sm font-bold flex items-center justify-center">
-                  {idx + 1}
-                </span>
-                {sec.heading}
-              </h2>
-              <p className="text-gray-600 leading-relaxed">{sec.body}</p>
+      {/* Module Header Area */}
+      <div className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex-1">
+              <div className="flex items-center gap-3">
+                 <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${levelColor[mod.level]}`}>
+                    {mod.level}
+                 </span>
+                 <span className="text-slate-400 dark:text-slate-500 font-bold text-xs uppercase tracking-tighter flex items-center gap-1">
+                   <BookOpen size={14} /> Module Path
+                 </span>
+              </div>
+              <h1 className="text-4xl font-black text-slate-800 dark:text-slate-100 mt-4 tracking-tight">
+                {mod.title}
+              </h1>
+              <p className="text-lg text-slate-500 dark:text-slate-400 mt-2 max-w-3xl leading-relaxed">
+                {mod.description}
+              </p>
             </div>
-          ))}
+            
+            {/* ELI5 Toggle */}
+            <div className="flex items-center gap-3 bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-3xl border border-indigo-100 dark:border-indigo-500/10">
+               <div>
+                  <p className="text-sm font-black text-indigo-600 dark:text-indigo-400 leading-none">ELI5 Mode</p>
+                  <p className="text-[10px] text-indigo-400 mt-1 uppercase font-bold tracking-tight">Simple Explanations</p>
+               </div>
+               <button 
+                onClick={() => setIsELI5(!isELI5)}
+                className={`w-12 h-6 rounded-full transition-all relative ${isELI5 ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-700'}`}
+               >
+                 <motion.div 
+                    animate={{ x: isELI5 ? 26 : 4 }}
+                    className="w-4 h-4 bg-white rounded-full absolute top-1"
+                 />
+               </button>
+            </div>
+          </div>
         </div>
-
-        {/* Quiz button */}
-        <button
-          onClick={handleTakeQuiz}
-          className="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-8 py-3 font-medium transition-colors text-lg"
-        >
-          Take Quiz →
-        </button>
+        
+        {/* Module Tabs */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-8 -mb-[1px]">
+            {[
+              { id: 'explanation', label: 'Theory', icon: Layers },
+              { id: 'visualization', label: '3D Simulation', icon: Eye },
+              { id: 'practice', label: 'Code Lab', icon: Code },
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`py-4 flex items-center gap-2 text-sm font-black uppercase tracking-widest border-b-2 transition-all ${
+                  activeTab === tab.id 
+                    ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400' 
+                    : 'border-transparent text-slate-400 hover:text-slate-600'
+                }`}
+              >
+                <tab.icon size={18} />
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
+
+      {/* Content Area */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <AnimatePresence mode="wait">
+          
+          {/* Theory Tab */}
+          {activeTab === 'explanation' && (
+            <motion.div
+              key="explanation"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              className="space-y-8"
+            >
+              {isELI5 ? (
+                <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-8 md:p-12 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden">
+                   <div className="flex items-center gap-4 mb-6">
+                      <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center">
+                        <Sparkles size={24} />
+                      </div>
+                      <h2 className="text-2xl font-black">Plain English Version</h2>
+                   </div>
+                   <p className="text-xl md:text-2xl font-medium leading-relaxed max-w-4xl text-indigo-50">
+                     "{mod.layman}"
+                   </p>
+                   <div className="absolute -bottom-12 -right-12 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
+                </div>
+              ) : (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {mod.sections.map((sec, i) => (
+                    <motion.div 
+                      key={i}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.1 }}
+                      className="bg-white dark:bg-slate-900 p-8 rounded-[2rem] border border-gray-100 dark:border-slate-800 shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 transition-all group"
+                    >
+                      <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <Zap size={24} />
+                      </div>
+                      <h3 className="text-xl font-black text-slate-800 dark:text-slate-100 mb-4 tracking-tight uppercase leading-tight">{sec.heading}</h3>
+                      <p className="text-slate-500 dark:text-slate-400 font-medium leading-relaxed">{sec.body}</p>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+              
+              {/* Common section for all explanatory modules */}
+              <div className="bg-slate-100 dark:bg-slate-900/50 p-8 rounded-[2rem] border border-slate-200 dark:border-slate-800 text-center">
+                 <h4 className="text-slate-400 font-bold uppercase tracking-widest text-xs mb-4">Pro Tip</h4>
+                 <p className="max-w-2xl mx-auto text-slate-600 dark:text-slate-400 font-medium italic">
+                   "Mastery comes from understanding the math first, then the code. Check the 3D visualizer to see how the logic shapes the data."
+                 </p>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Visualization Tab */}
+          {activeTab === 'visualization' && (
+            <motion.div
+              key="viz"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              className="space-y-12"
+            >
+              <AlgorithmVisualizer type={mod.id} />
+              
+              {/* Dynamic What-If Section */}
+              <WhatIfSimulator type={mod.id} />
+            </motion.div>
+          )}
+
+          {/* Practice Tab */}
+          {activeTab === 'practice' && (
+            <motion.div
+              key="practice"
+              initial={{ opacity: 0, scale: 1.05 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              className="space-y-8"
+            >
+              <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
+                <div>
+                   <h2 className="text-2xl font-black text-slate-800 dark:text-slate-100 tracking-tight flex items-center gap-3">
+                      <Terminal className="text-indigo-600" /> Interactive Lab
+                   </h2>
+                   <p className="text-slate-500 font-medium">Write, run and analyze algorithm performance</p>
+                </div>
+              </div>
+              
+              <CodeEditor initialLanguage="javascript" />
+            </motion.div>
+          )}
+
+        </AnimatePresence>
+
+        {/* Footer Navigation */}
+        <div className="mt-16 pt-12 border-t border-gray-200 dark:border-slate-800 flex flex-col md:flex-row items-center justify-between gap-8">
+           <div className="flex items-center gap-4">
+              <div className="w-14 h-14 bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 rounded-2xl flex items-center justify-center">
+                 <Trophy size={28} />
+              </div>
+              <div>
+                 <p className="text-lg font-black text-slate-800 dark:text-slate-100 tracking-tight leading-none">Ready for the Quiz?</p>
+                 <p className="text-slate-500 text-sm font-medium mt-1">Pass to unlock the next module and earn <span className="text-indigo-600 font-bold">50 XP</span></p>
+              </div>
+           </div>
+           
+           <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={handleComplete}
+            className="w-full md:w-auto px-10 py-5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-[2rem] font-bold text-lg shadow-2xl shadow-indigo-600/20 flex items-center justify-center gap-3 transition-all"
+           >
+             Start Knowledge Check <ChevronRight size={20} strokeWidth={3} />
+           </motion.button>
+        </div>
+      </main>
     </div>
   );
 }

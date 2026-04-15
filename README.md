@@ -1,30 +1,34 @@
-# 🧠 NeuralPath — AI & ML Learning Platform
+# 🧠 NeuralPath — Next-Gen AI & ML Learning Platform
 
-An interactive platform for learning Artificial Intelligence and Machine Learning concepts through structured modules, quizzes, games, and gamification.
+NeuralPath is a premium, interactive, and visually stunning learning platform for Artificial Intelligence and Machine Learning. Master core algorithms through 3D simulations, interactive coding labs, and gamified circuits.
 
-## Tech Stack
+## 🚀 Key Features
 
-- **Vite** — Lightning-fast build tool
-- **React** — UI library
-- **Tailwind CSS** — Utility-first styling
-- **React Router** — Client-side routing
-- **Recharts** — Charts and data visualisation
+- 🧊 **3D Algorithm Visualizer** — Interactive Three.js simulations for Decision Trees, Neural Networks, K-Means, and Gradient Descent.
+- 💻 **Interactive Code Lab** — Full Monaco-based editor supporting JavaScript, Java, C++, C, and C# with simulated execution.
+- 🧪 **What-If Simulator** — Live parameter adjustment tool with real-time analytics.
+- 🤖 **AI Tutor** — Context-aware simulated assistant embedded in every module.
+- 📚 **10 Learning Modules** — Comprehensive coverage from Beginner to Advanced levels.
+- 🎯 **Advanced Analytics** — Learning momentum charts, activity heatmaps, and focus distribution.
+- 🏆 **Neural Arena** — Drag-and-drop architectural games with level-based rewards.
+- 🌓 **Dynamic Theme** — Full dark mode support with glassmorphism aesthetics.
+- 🔐 **Persistent Progress** — LocalStorage-based auth and progress tracking.
 
-## Features
+## 🛠️ Tech Stack
 
-- 📚 **5 Learning Modules** — Decision Trees, Neural Networks, Classification, Clustering, Linear Regression
-- 🎯 **Interactive Quizzes** — 5 MCQ questions per module with explanations
-- 🎮 **Spam Classifier Game** — Classify 10 emails and see a bar chart of spam trigger words
-- 📊 **Dashboard** — Track score, streaks, completed modules, and earned badges
-- 🏆 **Leaderboard** — Top 10 users sorted by score with medal emojis
-- 🏅 **Badge System** — Earn badges: First Step, Quiz Master, On Fire, Game Over
-- 🔐 **Auth** — Register/login with localStorage (no backend required)
-- 📱 **Responsive** — Mobile-first design with hamburger navigation
-- 🎨 **SVG Diagrams** — Inline decision tree & neural network visualisations
+- **React + Vite** — High-performance frontend foundation.
+- **Three.js + R3F** — Advanced 3D rendering and simulations.
+- **Framer Motion** — Smooth physics-based animations and transitions.
+- **Tailwind CSS v4** — Modern utility-first styling with dark mode.
+- **Monaco Editor** — Professional-grade code editing environment.
+- **Recharts** — Dynamic data visualization and analytics.
 
-## Getting Started
+## 🏁 Getting Started
 
 ```bash
+# Clone the repository
+git clone [your-repo-url]
+
 # Install dependencies
 npm install
 
@@ -35,14 +39,6 @@ npm run dev
 npm run build
 ```
 
-## Screenshots
-
-<!-- Add screenshots here -->
-
-## Live Demo
-
-<!-- Add live demo URL here -->
-
-## License
+## 📜 License
 
 MIT

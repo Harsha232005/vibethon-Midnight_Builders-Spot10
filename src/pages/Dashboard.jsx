@@ -1,113 +1,263 @@
-import { Link } from 'react-router-dom';
+import { useState, useMemo } from 'react';
+import { motion } from 'framer-motion';
+import _CountUp from 'react-countup';
+import * as Recharts from 'recharts';
+import * as LucideIcons from 'lucide-react';
+import * as Router from 'react-router-dom';
 import { getUser } from '../utils/auth';
 import { modules } from '../data/modules';
 import Navbar from '../components/Navbar';
+import ActivityHeatmap from '../components/ActivityHeatmap';
 import ProgressBar from '../components/ProgressBar';
-import BadgeCard from '../components/BadgeCard';
 
-const BADGE_DEFS = [
-  { id: 'first-step', emoji: '🏆', name: 'First Step', description: 'Completed your first module' },
-  { id: 'quiz-master', emoji: '🧠', name: 'Quiz Master', description: 'Scored 100+ points' },
-  { id: 'on-fire', emoji: '🔥', name: 'On Fire', description: '3+ day streak' },
-  { id: 'game-over', emoji: '🎮', name: 'Game Over', description: 'Completed the spam classifier game' },
-];
+// Safe component extraction for libraries with CJS/ESM interop issues in React 19 + Vite
+const CountUp = _CountUp.default || _CountUp;
+const { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } = Recharts;
+const { Brain, Star, Flame, Trophy, ChevronRight, Zap, Target, BookOpen } = LucideIcons;
+const { Link } = Router;
 
-const levelColor = {
-  Beginner: 'bg-green-100 text-green-700',
-  Intermediate: 'bg-yellow-100 text-yellow-700',
-  Advanced: 'bg-red-100 text-red-700',
-};
+const COLORS = ['#6366f1', '#8b5cf6', '#a855f7', '#d946ef', '#ec4899'];
 
 export default function Dashboard() {
   const user = getUser();
   if (!user) return null;
 
   const completedCount = user.completedModules?.length || 0;
-  const earnedBadges = BADGE_DEFS.filter((b) => user.badges?.includes(b.id));
+  const progressPercent = (completedCount / modules.length) * 100;
+
+  // Mock data for learning progress
+  const progressData = [
+    { name: 'Mon', xp: 20 },
+    { name: 'Tue', xp: 45 },
+    { name: 'Wed', xp: 30 },
+    { name: 'Thu', xp: 80 },
+    { name: 'Fri', xp: 50 },
+    { name: 'Sat', xp: 90 },
+    { name: 'Sun', xp: 120 },
+  ];
+
+  const distributionData = [
+    { name: 'Beginner', value: 2 },
+    { name: 'Intermediate', value: 3 },
+    { name: 'Advanced', value: 5 },
+  ];
+
+  const nextModule = useMemo(() => {
+    return modules.find(m => !user.completedModules?.includes(m.id)) || modules[0];
+  }, [user]);
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1 }
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
       <Navbar />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome banner */}
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-6 md:p-8 text-white mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold">Welcome back, {user.name}! 👋</h1>
-          <p className="mt-2 text-indigo-100">Continue your AI & ML learning journey.</p>
-        </div>
 
-        {/* Stat cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {[
-            { label: 'Total Score', value: user.score || 0, icon: '⭐' },
-            { label: 'Modules Completed', value: `${completedCount} / ${modules.length}`, icon: '📚' },
-            { label: 'Current Streak', value: user.streak || 0, icon: '🔥' },
-            { label: 'Badges Earned', value: earnedBadges.length, icon: '🏅' },
-          ].map((s) => (
-            <div key={s.label} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6">
-              <span className="text-2xl">{s.icon}</span>
-              <p className="text-2xl font-bold text-gray-800 mt-2">{s.value}</p>
-              <p className="text-sm text-gray-500">{s.label}</p>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="space-y-10"
+        >
+          {/* Header Section */}
+          <motion.div variants={itemVariants} className="relative overflow-hidden bg-indigo-600 dark:bg-indigo-900 rounded-[2rem] p-8 md:p-12 text-white">
+            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+              <div>
+                <motion.span
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full text-sm font-bold tracking-wide uppercase"
+                >
+                  Current Rank: ML Explorer
+                </motion.span>
+                <h1 className="text-4xl md:text-5xl font-black mt-4 leading-tight">
+                  Welcome back, <br className="md:hidden" />
+                  <span className="text-indigo-200">{user.name}</span>! 👋
+                </h1>
+                <p className="mt-4 text-indigo-100/80 max-w-xl text-lg font-medium leading-relaxed">
+                  You've completed <span className="text-white font-bold">{progressPercent.toFixed(0)}%</span> of your master path.
+                  Ready to dive into the next challenge?
+                </p>
+              </div>
+
+              <div className="flex flex-col items-center justify-center p-6 bg-white/10 backdrop-blur-lg rounded-3xl border border-white/10">
+                <div className="text-6xl mb-2">🚀</div>
+                <div className="text-3xl font-black"><CountUp end={user.score || 0} duration={2} /></div>
+                <div className="text-xs font-bold uppercase tracking-widest text-indigo-200">Total XP Points</div>
+              </div>
             </div>
-          ))}
-        </div>
 
-        {/* Module list */}
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Learning Modules</h2>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-8">
-          {modules.map((m) => {
-            const done = user.completedModules?.includes(m.id);
-            return (
-              <Link
-                key={m.id}
-                to={`/module/${m.id}`}
-                className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow group"
+            {/* Background design elements */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-500/20 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl" />
+          </motion.div>
+
+          {/* Stats Grid */}
+          <motion.div variants={itemVariants} className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { label: 'Streak', value: user.streak || 0, icon: Flame, color: 'text-orange-500', bg: 'bg-orange-50 dark:bg-orange-500/10' },
+              { label: 'Completed', value: completedCount, icon: BookOpen, color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-500/10' },
+              { label: 'Badges', value: user.badges?.length || 0, icon: Trophy, color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-500/10' },
+              { label: 'Target', value: '80%', icon: Target, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-500/10' },
+            ].map((stat, idx) => (
+              <motion.div
+                key={stat.label}
+                whileHover={{ y: -5 }}
+                className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-gray-100 dark:border-slate-800 shadow-sm shadow-indigo-500/5 group transition-all"
               >
-                <div className="flex items-center justify-between mb-3">
-                  <span className={`text-xs font-semibold px-2 py-1 rounded-full ${levelColor[m.level]}`}>
-                    {m.level}
-                  </span>
-                  {done && <span className="text-green-500 text-sm font-medium">✓ Complete</span>}
+                <div className={`w-12 h-12 ${stat.bg} ${stat.color} rounded-2xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110`}>
+                  <stat.icon size={24} />
                 </div>
-                <h3 className="font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors">
-                  {m.title}
-                </h3>
-                <p className="text-sm text-gray-500 mt-1 line-clamp-2">{m.description}</p>
-                <div className="mt-4">
-                  <ProgressBar value={done ? 100 : 0} max={100} color={done ? 'bg-green-500' : 'bg-gray-300'} />
+                <div className="text-2xl font-black text-slate-800 dark:text-slate-100">
+                  <CountUp end={parseInt(stat.value)} duration={2} />
+                  {stat.label === 'Target' && '%'}
                 </div>
-              </Link>
-            );
-          })}
-        </div>
+                <div className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-tight">{stat.label}</div>
+              </motion.div>
+            ))}
+          </motion.div>
 
-        {/* Badges */}
-        {earnedBadges.length > 0 && (
-          <>
-            <h2 className="text-xl font-bold text-gray-800 mb-4">Earned Badges</h2>
-            <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 mb-8">
-              {earnedBadges.map((b) => (
-                <BadgeCard key={b.id} emoji={b.emoji} name={b.name} description={b.description} />
-              ))}
+          {/* Charts Section */}
+          <motion.div variants={itemVariants} className="grid lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 bg-white dark:bg-slate-900 p-8 rounded-[2rem] border border-gray-100 dark:border-slate-800 shadow-sm">
+              <div className="flex items-center justify-between mb-8">
+                <div>
+                  <h2 className="text-xl font-black text-slate-800 dark:text-slate-100 tracking-tight">Learning Momentum</h2>
+                  <p className="text-sm text-slate-400 font-medium">Daily XP acquisition trend</p>
+                </div>
+                <div className="flex gap-2">
+                  <span className="w-3 h-3 rounded-full bg-indigo-500" />
+                  <span className="w-3 h-3 rounded-full bg-slate-200 dark:bg-slate-700" />
+                </div>
+              </div>
+              <div className="h-64 w-full min-h-[256px]">
+                <ResponsiveContainer width="100%" height="100%" minHeight={256}>
+                  <AreaChart data={progressData}>
+                    <defs>
+                      <linearGradient id="colorXp" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#6366f1" stopOpacity={0.1} />
+                        <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" className="dark:stroke-slate-800" />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
+                    <YAxis hide />
+                    <Tooltip
+                      contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', backgroundColor: 'rgba(255,255,255,0.95)' }}
+                    />
+                    <Area type="monotone" dataKey="xp" stroke="#6366f1" strokeWidth={4} fillOpacity={1} fill="url(#colorXp)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
             </div>
-          </>
-        )}
 
-        {/* Actions */}
-        <div className="flex flex-wrap gap-4">
-          <Link
-            to="/leaderboard"
-            className="bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-6 py-2.5 font-medium transition-colors"
-          >
-            View Leaderboard
-          </Link>
-          <Link
-            to="/game"
-            className="bg-purple-600 hover:bg-purple-700 text-white rounded-lg px-6 py-2.5 font-medium transition-colors"
-          >
-            Play Spam Classifier Game
-          </Link>
-        </div>
-      </div>
+            <div className="bg-white dark:bg-slate-900 p-8 rounded-[2rem] border border-gray-100 dark:border-slate-800 shadow-sm flex flex-col items-center">
+              <h2 className="text-xl font-black text-slate-800 dark:text-slate-100 self-start mb-2 tracking-tight">Focus Distribution</h2>
+              <p className="text-sm text-slate-400 font-medium self-start mb-8">By difficulty levels</p>
+              <div className="h-48 w-full min-h-[192px]">
+                <ResponsiveContainer width="100%" height="100%" minHeight={192}>
+                  <PieChart>
+                    <Pie
+                      data={distributionData}
+                      innerRadius={60}
+                      outerRadius={80}
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {distributionData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} cornerRadius={10} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="grid grid-cols-3 gap-4 mt-4 w-full">
+                {distributionData.map((d, i) => (
+                  <div key={d.name} className="text-center">
+                    <div className="text-xs font-black text-slate-800 dark:text-slate-200">{d.value}</div>
+                    <div className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter" style={{ color: COLORS[i] }}>{d.name}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Activity Heatmap */}
+          <motion.div variants={itemVariants}>
+            <ActivityHeatmap />
+          </motion.div>
+
+          {/* Continue Learning & Suggested */}
+          <motion.div variants={itemVariants} className="grid lg:grid-cols-3 gap-8">
+            {/* Suggested Module Card */}
+            <div className="lg:col-span-1">
+              <h2 className="text-2xl font-black text-slate-800 dark:text-slate-100 mb-6 flex items-center gap-3 tracking-tight">
+                Recommended <Zap className="text-amber-500" fill="currentColor" size={20} />
+              </h2>
+              <div className="bg-gradient-to-br from-slate-900 to-indigo-950 p-8 rounded-[2rem] text-white relative overflow-hidden group">
+                <div className="relative z-10">
+                  <span className="text-indigo-400 text-xs font-black uppercase tracking-widest">{nextModule.level}</span>
+                  <h3 className="text-2xl font-black mt-2 leading-tight">{nextModule.title}</h3>
+                  <p className="text-indigo-300/80 text-sm mt-4 leading-relaxed line-clamp-2">{nextModule.description}</p>
+                  <Link
+                    to={`/module/${nextModule.id}`}
+                    className="inline-flex items-center gap-2 mt-8 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-2xl font-bold transition-all active:scale-95 group-hover:shadow-xl group-hover:shadow-indigo-500/20"
+                  >
+                    Continue Path <ChevronRight size={18} strokeWidth={3} />
+                  </Link>
+                </div>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl" />
+                <Brain className="absolute -bottom-8 -right-8 text-white/5 w-48 h-48 rotate-12 transition-transform group-hover:rotate-0 duration-700" />
+              </div>
+            </div>
+
+            {/* Other Modules Grid */}
+            <div className="lg:col-span-2">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-black text-slate-800 dark:text-slate-100 tracking-tight">Learning Paths</h2>
+                <Link to="/modules" className="text-indigo-600 font-bold text-sm hover:underline">View All</Link>
+              </div>
+              <div className="grid sm:grid-cols-2 gap-4">
+                {modules.slice(0, 4).map((m) => {
+                  const isDone = user.completedModules?.includes(m.id);
+                  return (
+                    <Link
+                      key={m.id}
+                      to={`/module/${m.id}`}
+                      className="group bg-white dark:bg-slate-900 p-6 rounded-3xl border border-gray-100 dark:border-slate-800 shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 transition-all"
+                    >
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform">
+                          <BookOpen size={20} />
+                        </div>
+                        {isDone && <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-1 rounded-full">Pro</span>}
+                      </div>
+                      <h4 className="font-black text-slate-800 dark:text-slate-100 group-hover:text-indigo-600 transition-colors uppercase tracking-tight">{m.title}</h4>
+                      <div className="mt-4">
+                        <ProgressBar value={isDone ? 100 : 0} color={isDone ? 'bg-emerald-500' : 'bg-slate-200 dark:bg-slate-800'} />
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          </motion.div>
+
+        </motion.div>
+      </main>
     </div>
   );
 }
